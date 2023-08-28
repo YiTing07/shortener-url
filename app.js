@@ -4,7 +4,7 @@ const app = express()
 const port = 3000
 
 app.get('/', (req, res) => {
-  res.send('express run for shortener-url')
+  res.redirect('shortener-url')
 })
 
 app.listen(port, (req, res) => {
