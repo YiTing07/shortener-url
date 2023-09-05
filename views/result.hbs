@@ -1,3 +1,7 @@
 <!-- shortened URL -->
-<P>Your shortened URL: </P>
-<a href=""></a>
+{{#if errorMessage}}
+<p class="remind alert alert-danger ">{{errorMessage}}</p>
+{{else}}
+<p>Your shortened URL: </p>
+<a href="{{shortURL}}">{{shortURL}}</a>
+{{/if}}
