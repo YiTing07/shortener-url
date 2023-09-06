@@ -2,6 +2,7 @@
 const express = require('express')
 const { engine } = require('express-handlebars')
 const { nanoid } = require('nanoid')
+const axios = require('axios')
 const app = express()
 const port = 3000
 
@@ -36,20 +37,29 @@ app.post('/shorten', (req, res) => {
     res.render('result',{errorMessage: `Please enter the full URL!`})
     return
   }
- 
-  // 定義 urlDatabase 現有的網址，以利後續比對，避免重複
-  const existingURL = Object.keys(urlDatabase).find((shortURL) => 
-  urlDatabase[shortURL] === originalURL
-  )
 
-  if(existingURL) {
-    res.render('result', {shortURL: `${BASE_URL}${existingURL}`})
-  } else {
-    const shortURL = nanoid(5)
-    urlDatabase[shortURL] = originalURL
-    res.render('result', {shortURL: `${BASE_URL}${shortURL}`})
-  }
   
+  // 確認網址是否存在
+  axios.get(originalURL)
+    .then((response) => {
+      if (response.status === 200) {
+        // 定義 urlDatabase 現有的網址，以利後續比對，避免重複
+        const existingURL = Object.keys(urlDatabase).find((shortURL) => 
+        urlDatabase[shortURL] === originalURL
+        )
+
+        if(existingURL) {
+          res.render('result', {shortURL: `${BASE_URL}${existingURL}`})
+        } else {
+          const shortURL = nanoid(5)
+          urlDatabase[shortURL] = originalURL
+          res.render('result', {shortURL: `${BASE_URL}${shortURL}`})
+        }
+      } 
+    })
+    .catch((error) => {
+      res.render('result', {errorMessage: `Please confirm whether the URL is valid.`})
+    })  
 })
 
 
