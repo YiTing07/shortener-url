@@ -41,13 +41,13 @@ app.post('/shorten', (req, res) => {
   
   // 確認網址是否存在
   axios.get(originalURL)
-    .then((response) => {
+    .then ((response) => {
       if (response.status === 200) {
         // 定義 urlDatabase 現有的網址，以利後續比對，避免重複
         const existingURL = Object.keys(urlDatabase).find((shortURL) => 
         urlDatabase[shortURL] === originalURL
         )
-
+  
         if(existingURL) {
           res.render('result', {shortURL: `${BASE_URL}${existingURL}`})
         } else {
@@ -55,11 +55,23 @@ app.post('/shorten', (req, res) => {
           urlDatabase[shortURL] = originalURL
           res.render('result', {shortURL: `${BASE_URL}${shortURL}`})
         }
-      } 
+      }
     })
     .catch((error) => {
       res.render('result', {errorMessage: `Please confirm whether the URL is valid.`})
     })  
+})
+
+// 設定短網址路由
+app.get('/:shortURL', (req, res) => {
+  const shortURL = req.params.shortURL
+  const originalURL = urlDatabase[shortURL]
+
+  if(originalURL) {
+    res.redirect(originalURL)
+  } else {
+    res.status(404).send('ShortURL is not found.')
+  }
 })
 
 
